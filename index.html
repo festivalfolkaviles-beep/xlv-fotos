@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Galería Automática con GLightbox</title>
+  
+  <!-- GLightbox CSS desde CDN -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/glightbox@3.0.2/dist/css/glightbox.min.css">
+  
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #f9f9f9;
+      margin: 20px;
+      text-align: center;
+    }
+    h1 {
+      margin-bottom: 20px;
+    }
+    #galeria {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      justify-content: center;
+    }
+    #galeria a {
+      display: block;
+      width: 220px;
+      border-radius: 5px;
+      box-shadow: 0 0 5px rgba(0,0,0,0.3);
+      transition: transform 0.2s;
+    }
+    #galeria a img {
+      width: 100%;
+      height: auto;
+      display: block;
+      border-radius: 5px;
+    }
+    #galeria a:hover {
+      transform: scale(1.05);
+    }
+  </style>
+</head>
+<body>
+  <h1>📷 Mi Galería Automática con GLightbox</h1>
+  <div id="galeria"></div>
+
+  <!-- GLightbox JS desde CDN -->
+  <script src="https://cdn.jsdelivr.net/npm/glightbox@3.0.2/dist/js/glightbox.min.js"></script>
+  <script>
+    // ⚡ CAMBIA ESTOS DATOS
+    const usuario = "festivalfolkaviles-beep";      // Ej: beznar
+    const repo = "xliii-fotos";     // Ej: galeria-fotos
+    const carpeta = "imagenes";        // Carpeta con tus fotos
+
+    const galeria = document.getElementById("galeria");
+
+    fetch(`https://api.github.com/repos/${usuario}/${repo}/contents/${carpeta}`)
+      .then(res => res.json())
+      .then(data => {
+        data.forEach(file => {
+          if (file.type === "file" && /\.(jpg|jpeg|png|gif)$/i.test(file.name)) {
+            // Crear enlace para GLightbox
+            const enlace = document.createElement("a");
+            enlace.href = file.download_url;
+            enlace.dataset.glightbox = "";
+            enlace.innerHTML = `<img src="${file.download_url}" alt="${file.name}" />`;
+            galeria.appendChild(enlace);
+          }
+        });
+
+        // Inicializar GLightbox
+        GLightbox({
+          selector: '[data-glightbox]'
+        });
+      })
+      .catch(err => console.error("Error al cargar imágenes:", err));
+  </script>
+</body>
+</html>
